@@ -1,13 +1,29 @@
 import uvicorn
 from fastapi import FastAPI
 
-app = FastAPI()
+import api
+from db.blog import init_db
 
+tags_metadata = [
+    {
+        "name": "Blogs",
+        "description": "Operations with blogs.",
+    },
+    {
+        "name": "Users",
+        "description": "Operations with users.",
+    },
+    {
+        "name": "Auth",
+        "description": "Operations with authentication.",
+    },
+]
 
-@app.get("/")
-def index():
-    return "Hello, World!"
-
+app = FastAPI(openapi_tags=tags_metadata)
+app.include_router(api.router, prefix="/api")
 
 if __name__ == "__main__":
-    uvicorn.run(app="main:app", host="localhost", port=8000, log_level="debug", reload=True)
+    init_db()
+    uvicorn.run(
+        app="main:app", host="localhost", port=8000, log_level="debug", reload=True
+    )
